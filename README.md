@@ -1,17 +1,21 @@
 # brutils-spec
 
-Language-neutral conformance cases for every brutils implementation (`@brutils/core` today, `brutils-kotlin`
-next). A behavior change starts here: update the cases, bump `specVersion` when existing expectations change, then
-make each implementation pass.
+Language-neutral conformance cases shared by every brutils implementation. A behavior change starts here: update the
+cases, bump `specVersion` when existing expectations change, then make each implementation pass.
 
-This directory is incubated inside the JS monorepo and will be split into its own `brutils-spec` repository
-(`git subtree split --prefix=spec`) once a second implementation consumes it.
+## Consumers
+
+Each implementation pins a commit of this repository, so a change here reaches it only when it moves the pin.
+
+| Implementation                                                    | How it pins the spec                                    |
+| :---------------------------------------------------------------- | :------------------------------------------------------ |
+| [brutils-js](https://github.com/youphenrique/brutils-js)         | Git submodule at `spec/`                                |
+| [brutils-kotlin](https://github.com/youphenrique/brutils-kotlin) | `brutils.spec.ref` in `gradle.properties` (commit SHA) |
 
 ## Layout
 
 ```
-spec/
-  <module>/cases.json   # one file per module (cpf, ...)
+<module>/cases.json   # one file per module (cpf, ...)
 ```
 
 ## Format
@@ -24,8 +28,8 @@ Each `cases.json` holds:
 - Some sections are derived: they state a rule over another section's cases instead of listing cases (for example,
   `checkDigitCorruption` mutates every `valid` case).
 
-Strings are plain JSON. Invisible or ambiguous characters are written as `\uXXXX` escapes, so the formatter skips
-`spec/**/*.json`. Lone surrogates are not valid in strict JSON, so cases that need them are given as UTF-16 code
+Strings are plain JSON. Invisible or ambiguous characters are written as `\uXXXX` escapes; keep them escaped, and
+keep formatters that would decode them off these files. Lone surrogates are not valid in strict JSON, so cases that need them are given as UTF-16 code
 units in a separate `*Utf16` section that only UTF-16 languages (JavaScript, JVM) apply.
 
 ## What stays out
